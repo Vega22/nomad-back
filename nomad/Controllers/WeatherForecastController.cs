@@ -38,7 +38,8 @@ namespace nomad.Controllers
             }
             else
             {
-                List<weatherModel> result = new List<weatherModel>();
+                List<ResponseModel> result = new List<ResponseModel>();
+                List<weatherModel> result2 = new List<weatherModel>();
                 List<cityModel> cities = GetAllCities().Result;
                 for (int i = 0; i < cities.Count; i++)
                 {
@@ -46,7 +47,10 @@ namespace nomad.Controllers
                     client.Timeout = -1;
                     var request = new RestRequest(Method.GET);
                     IRestResponse response = client.Execute(request);
-                    result.Add(JsonConvert.DeserializeObject<weatherModel>(response.Content));
+                    weatherModel value = JsonConvert.DeserializeObject<weatherModel>(response.Content);
+                    ResponseModel newResponse = new ResponseModel(
+                        value.name, value.timezone, value.main.temp, value.wind.speed, value.weather[0].main);
+                    result.Add(newResponse);
                 }
 
                 //return JsonConvert.DeserializeObject<weatherModel>(response.Content);
